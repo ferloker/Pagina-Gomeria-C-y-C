@@ -1,0 +1,67 @@
+/* Layout System */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl); /* Reduced for mobile */
+    padding-bottom: var(--spacing-xl);
+}
+
+section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.container-flex {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+/* Base Responsive Grid (Auto-Fit Cards) */
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+}
+
+/* Mobile First Grid */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    section {
+        padding: 0 var(--spacing-xl);
+    }
+
+    main {
+        gap: var(--spacing-xxl); /* Restore large gap for desktop */
+        padding-bottom: var(--spacing-xxl);
+    }
+}
+
+/* Section Spacing */
+.section-padding {
+    padding-top: var(--spacing-lg); /* 24px for mobile */
+    padding-bottom: var(--spacing-lg);
+}
+
+@media (min-width: 768px) {
+    .section-padding {
+        padding-top: var(--spacing-xl); /* 40px for desktop */
+        padding-bottom: var(--spacing-xl);
+    }
+}

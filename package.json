@@ -1,0 +1,18 @@
+{
+  "name": "gomeria-cyc-prototipo",
+  "version": "1.0.0",
+  "description": "Prototipo de página web para Gomería C y C con servidor Express",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.32.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

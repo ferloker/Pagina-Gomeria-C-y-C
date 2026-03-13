@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Gomería C y C</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/styles/global.css">
+    <link rel="stylesheet" href="../src/styles/components.css">
+    <style>
+        body { 
+            padding: 40px 20px; 
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .admin-header {
+            margin-bottom: var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-section {
+            margin-bottom: var(--spacing-xxl);
+        }
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: bold; 
+            color: rgba(255,255,255,0.9);
+        }
+        input[type="text"], input[type="number"], textarea, input[type="color"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-family: var(--font-body);
+        }
+        input[type="color"] {
+            padding: 5px;
+            height: 50px;
+            cursor: pointer;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .admin-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+        .img-preview { 
+            width: 100%; 
+            height: 180px; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            background: rgba(0,0,0,0.3);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+        .settings-card {
+            max-width: 600px;
+        }
+        .btn-config-card {
+            padding: 20px;
+            border-left: 4px solid var(--primary-red);
+        }
+        
+    </style>
+</head>
+<body class="industrial-theme">
+
+    <div class="admin-header">
+        <div>
+            <h1 class="hero-title" style="font-size: 2rem; margin-bottom: 0;">Panel de Control</h1>
+            <p style="color: #aaa; margin-top: 5px;">Gomería C y C - Administración Avanzada</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" style="width: auto; height: 40px; min-height: 40px; padding: 0 20px; margin-right: 10px;" onclick="saveSettings()">💾 Guardar Todo</button>
+            <a href="/" class="btn btn-whatsapp" style="width: auto; height: 40px; min-height: 40px; padding: 0 20px;">👁️ Ver Sitio</a>
+        </div>
+    </div>
+
+    <!-- CONFIGURATION SECTION -->
+    <div class="admin-section">
+        <h2 class="title-underline">Configuración General</h2>
+        
+        <div class="card-glass settings-card">
+            <form id="generalSettingsForm">
+                <div class="form-group">
+                    <label>Número de WhatsApp (con código de país, sin el +)</label>
+                    <input type="text" id="waNumber" placeholder="Ej: 595973378073" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tamaño del Logo de WhatsApp en Inicio (Píxeles)</label>
+                    <input type="number" id="waLogoSize" min="40" max="150" required>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BOTONES SECTION -->
+    <div class="admin-section">
+        <h2 class="title-underline">Configuración de Botones</h2>
+        <p style="color: #aaa; margin-bottom: 20px;">Edita el texto, el color y el mensaje de WhatsApp exacto que enviará cada botón.</p>
+        
+        <div class="admin-grid" id="buttons-container">
+            <!-- Button Cards injected via JS -->
+        </div>
+    </div>
+
+    <!-- IMAGES SECTION -->
+    <div class="admin-section">
+        <h2 class="title-underline">Gestión de Imágenes</h2>
+        <p style="color: #aaa; margin-bottom: 5px;">Las imágenes se redimensionan y optimizan automáticamente para encajar perfecto en móviles y escritorio sin importar la resolución original.</p>
+        <p style="color: #666; font-size: 0.9em; margin-bottom: 20px;"><em>Nota: No es necesario que recortes las imágenes tú mismo, el sistema lo hace automáticamente por detrás (usando Sharp).</em></p>
+        
+        <div class="admin-grid" id="upload-container">
+            <!-- Image Cards injected via JS -->
+        </div>
+    </div>
+
+    <script>
+        // Store current full settings object
+        let currentSettings = {};
+
+        // Button Configuration Map (for UI rendering)
+        const btnDefinitions = [
+            { id: 'hero', label: 'Botón Principal (Inicio)' },
+            { id: 'auxilioMotocarro', label: 'Botón Auxilio Motocarro' },
+            { id: 'auxilioMoto', label: 'Botón Auxilio Moto' },
+            { id: 'neumaticos', label: 'Botón Catálogo Neumáticos' }
+        ];
+
+        // API - Load Settings
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                currentSettings = await response.json();
+                
+                // Set general settings
+                document.getElementById('waNumber').value = currentSettings.whatsappNumber || '';
+                document.getElementById('waLogoSize').value = currentSettings.whatsappLogoSize || '';
+
+                // Render button settings
+                renderButtonCards();
+
+            } catch (error) {
+                console.error("No se pudieron cargar configuraciones:", error);
+            }
+        }
+
+        function renderButtonCards() {
+            const container = document.getElementById('buttons-container');
+            container.innerHTML = ''; // clear
+
+            btnDefinitions.forEach(def => {
+                // Get current values for this specific button or defaults
+                const btnData = currentSettings.buttons?.[def.id] || { text: '', color: '#D72638', message: '' };
+                
+                const cardHtml = `
+                    <div class="card-glass btn-config-card" style="border-left-color: ${btnData.color}">
+                        <h3 style="margin-bottom: 15px;">${def.label}</h3>
+                        
+                        <div class="form-group">
+                            <label>Texto del Botón</label>
+                            <input type="text" id="btn-text-${def.id}" value="${btnData.text || ''}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Color de Fondo</label>
+                            <input type="color" id="btn-color-${def.id}" value="${btnData.color || '#D72638'}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mensaje a enviar a WhatsApp</label>
+                            <textarea id="btn-msg-${def.id}" rows="4">${btnData.message || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // API - Save Settings
+        async function saveSettings() {
+            // Gather general data
+            const newData = {
+                whatsappNumber: document.getElementById('waNumber').value,
+                whatsappLogoSize: parseInt(document.getElementById('waLogoSize').value),
+                buttons: {}
+            };
+
+            // Gather granular button data
+            btnDefinitions.forEach(def => {
+                newData.buttons[def.id] = {
+                    text: document.getElementById(`btn-text-${def.id}`).value,
+                    color: document.getElementById(`btn-color-${def.id}`).value,
+                    message: document.getElementById(`btn-msg-${def.id}`).value
+                };
+            });
+
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newData)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert("Configuración guardada exitosamente");
+                    // Update current context and re-render border colors immediately without page refresh
+                    currentSettings = newData;
+                    renderButtonCards();
+                } else {
+                    alert("Falló al guardar configuración");
+                }
+                
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                alert("Error de conexión");
+            }
+        }
+
+        // Real upload function
+        async function uploadFile(inputId, targetName, imgPreviewId) {
+            const input = document.getElementById(inputId);
+            const file = input.files[0];
+            if (!file) {
+                alert('Por favor selecciona un archivo primero.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('target', targetName);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('¡Imagen actualizada con éxito!');
+                    const preview = document.getElementById(imgPreviewId);
+                    preview.src = `${preview.src.split('?')[0]}?t=${new Date().getTime()}`; // Bypass cache
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error uploading:', error);
+                alert('Ocurrió un error al subir la imagen.');
+            }
+        }
+
+        // Initialize Image Cards dynamically
+        const imgCards = [
+            { label: 'Logo Principal', target: 'logo', current: '../assets/images/logo.png' },
+            { label: 'Imagen Auxilio (Motocarro)', target: 'motocarro', current: '../assets/images/motocarro.jpg' },
+            { label: 'Imagen Auxilio (Moto)', target: 'moto', current: '../assets/images/moto.jpg' },
+            { label: 'Imagen Neumáticos Nuevos', target: 'nuevos', current: '../assets/images/nuevos.jpg' },
+            { label: 'Imagen Neumáticos Usados', target: 'usados', current: '../assets/images/usados.jpg' }
+        ];
+
+        const imgContainer = document.getElementById('upload-container');
+
+        imgCards.forEach((card, index) => {
+            const id = `upload-${index}`;
+            const imgId = `preview-${index}`;
+            
+            const cardHtml = `
+                <div class="card-glass">
+                    <label>${card.label}</label>
+                    <img src="${card.current}" id="${imgId}" class="img-preview">
+                    <input type="file" id="${id}" accept="image/*">
+                    <button class="btn btn-primary" style="min-height: 40px; padding: 10px;" onclick="uploadFile('${id}', '${card.target}', '${imgId}')">Subir Imagen</button>
+                </div>
+            `;
+            imgContainer.innerHTML += cardHtml;
+        });
+
+        // Init App
+        loadSettings();
+    </script>
+</body>
+</html>

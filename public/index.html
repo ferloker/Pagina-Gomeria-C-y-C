@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0A0A0A">
+    <meta name="description"
+        content="Gomería C y C - Auxilio mecánico, venta de neumáticos y servicios rápidos. Atención inmediata en Coronel Zoilo González.">
+    <meta property="og:title" content="Gomería C y C | Auxilio 24/7">
+    <meta property="og:description" content="Servicio de gomería, auxilio mecánico y venta de neumáticos nuevos y usados.">
+    <meta property="og:image" content="/assets/images/logo.png">
+    <meta property="og:type" content="website">
+    
+    <title>Gomería C y C | Auxilio y Neumáticos</title>
+
+    <link rel="manifest" href="/public/manifest.json">
+
+    <!-- Google Fonts: Inter & Outfit for industrial look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Outfit:wght@600;800&display=swap"
+        rel="stylesheet">
+
+    <!-- MapLibre GL JS for Interactive Maps -->
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+
+    <!-- Root Styles -->
+    <link rel="stylesheet" href="/src/styles/global.css?v=1.1">
+    <link rel="stylesheet" href="/src/styles/layout.css?v=1.1">
+    <link rel="stylesheet" href="/src/styles/components.css?v=1.1">
+
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="/assets/images/logo.png">
+</head>
+
+<body class="industrial-theme">
+    <div id="app">
+        <!-- Components will be injected or defined here -->
+        <header id="hero-container"></header>
+
+        <main>
+            <section id="payments-container"></section>
+            <section id="auxilio-container"></section>
+            <section id="neumaticos-container"></section>
+            <section id="servicios-container"></section>
+            <section id="maps-container"></section>
+        </main>
+
+        <!-- PWA Install Banner (Hidden by default) -->
+        <div id="pwa-install-banner" class="pwa-banner">
+            <div class="pwa-info">
+                <img src="/assets/images/logo.png" alt="Icono" class="pwa-icon">
+                <div class="pwa-text">
+                    <strong>Gomería C y C</strong>
+                    <span>App rápida sin conexión</span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button id="btn-install-pwa" class="btn btn-primary btn-sm" style="min-width: unset;">Instalar</button>
+                <button id="btn-close-pwa" class="btn-close-banner">&times;</button>
+            </div>
+        </div>
+
+        <!-- Floating WhatsApp Button (FAB) -->
+        <a href="#" id="whatsapp-fab" class="whatsapp-fab" target="_blank" aria-label="Chat on WhatsApp">
+            <img src="/assets/icons/whatsapp.png" alt="WhatsApp" style="width: 38px; height: 38px; object-fit: contain;">
+        </a>
+
+        <footer class="footer-simple">
+            <p>&copy; 2024 Gomería C y C. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <script type="module" src="/src/scripts/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/public/sw.js')
+                    .then(registration => {
+                        console.log('Se registró el ServiceWorker con éxito en el alcance: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Fallo al registrar el ServiceWorker: ', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
