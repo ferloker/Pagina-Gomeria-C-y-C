@@ -50,7 +50,7 @@ export const renderPayments = (containerId) => {
                             <button class="btn btn-secondary" id="close-reminder-btn">Cerrar</button>
                         </div>
                     </div>
-                    <div>
+                    <div class="modal-image-container">
                         <img src="/assets/images/transfer-success.png" alt="Confirmación de Pago" class="modal-illustration">
                     </div>
                 </div>
