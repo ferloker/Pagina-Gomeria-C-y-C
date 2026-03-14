@@ -1,0 +1,12 @@
+[build]
+  publish = "/" # Serve the root directory so assets and src are accessible
+
+[[redirects]]
+  from = "/"
+  to = "/public/index.html"
+  status = 200 # Rewrite, not 301 redirect, so the URL stays clean
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin/admin.html"
+  status = 200
