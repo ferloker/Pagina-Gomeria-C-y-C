@@ -384,6 +384,7 @@
     transform: translateY(20px) scale(0.95);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     color: #fff;
+    overflow: hidden;
 }
 
 .popup-overlay.active .popup-card.success-modal {
@@ -487,7 +488,7 @@
 /* Modal Responsive */
 @media (max-width: 768px) {
     .popup-card.success-modal {
-        padding: 35px 25px 30px;
+        padding: 30px 20px 25px;
         overflow: hidden;
     }
 
@@ -498,12 +499,14 @@
     
     .modal-image-container {
         position: absolute;
-        top: 20%;
-        left: -80px; /* Offset the image to the left */
-        width: 250px; 
+        top: 55%;
+        transform: translateY(-50%);
+        right: -60px; /* Bring image slightly more into view */
+        left: auto;
+        width: 320px; /* Increase size */
         height: auto;
         z-index: 1;
-        opacity: 0.2; /* Subtly visible without blocking text */
+        opacity: 0.25; /* Make watermark slightly more visible */
         pointer-events: none;
     }
 
@@ -512,6 +515,7 @@
         height: 100%;
         object-fit: contain;
         min-height: unset;
+        filter: drop-shadow(0 0 15px rgba(0,0,0,0.7));
     }
 
     .modal-content {
@@ -521,24 +525,26 @@
         background: transparent;
         text-align: left;
         display: block;
+        max-width: 95%; /* Allow text to breathe */
     }
 
     .modal-header {
         justify-content: flex-start;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
 
     .modal-header h3 {
         color: #fff;
         text-shadow: none;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
 
     .modal-text {
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba(255, 255, 255, 0.95);
         text-shadow: none;
-        margin-bottom: 25px;
-        font-size: 1rem;
+        margin-bottom: 20px;
+        font-size: 0.95rem;
+        padding-right: 15px; /* Prevent text from going too far to the right edge */
     }
 
     .modal-text strong {
@@ -546,7 +552,7 @@
     }
 
     .popup-close {
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.7);
         z-index: 3;
         top: 15px;
         right: 15px;
@@ -556,7 +562,13 @@
     .modal-actions {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        margin-top: 10px;
+        gap: 10px;
+        margin-top: 5px;
+    }
+    
+    .modal-actions .btn {
+        min-height: 42px; /* Reduce button height */
+        padding: 10px 20px;
+        font-size: 0.85rem; /* Reduce font size in buttons */
     }
 }

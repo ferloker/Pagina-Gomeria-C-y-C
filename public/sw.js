@@ -33,8 +33,9 @@ self.addEventListener('fetch', event => {
       const fetchPromise = fetch(event.request).then(networkResponse => {
         // Only cache successful GET requests
         if (event.request.method === 'GET' && networkResponse.ok) {
+           const responseToCache = networkResponse.clone();
            caches.open(CACHE_NAME).then(cache => {
-             cache.put(event.request, networkResponse.clone());
+             cache.put(event.request, responseToCache);
            });
         }
         return networkResponse;
